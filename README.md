@@ -16,12 +16,5 @@ In order to use OpenNLP, download the models by calling `download_models.sh`
 - create demo dir if not exists
 - run Main.java
 
-## Visualization
 
-Visualize the Graph using [GraphViz](https://graphviz.org).
-Create a demo dir, the default method will write a .dot file containing graph data
-
-```sh
-dot demo.dot -Tsvg > demo.svg
-```
 
