@@ -1,0 +1,18 @@
+{
+    "posts": [
+        {
+            "date":"2020-10-08T12:14:30+00:00", 
+            "text":"Lorem ipsum dolor sit amet.", 
+            "media":"www.example.com"
+        }, 
+        {
+            "date":"2022-05-04T16:15:20+01:00", 
+            "text":"Nullam viverra justo nec velit rhoncus dapibus. Curabitur laoreet tristique scelerisque. Duis ut pretium ex. Vivamus vulputate elit et aliquet viverra. Donec suscipit laoreet arcu eu faucibus. In iaculis finibus turpis, sed rhoncus lectus. Pellentesque egestas, dolor in posuere sollicitudin, velit urna faucibus leo, quis congue enim velit a magna. "
+        }, 
+        {
+            "date":"2024-01-31T08:12:45+00:00", 
+            "text":" Nullam feugiat non orci non ullamcorper. Duis ut condimentum arcu. Sed lacus dui, mollis eu mauris sit amet, imperdiet porttitor felis. ",
+            "media":"/images/example.png"
+        }
+    ]
+}
