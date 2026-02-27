@@ -1,0 +1,12 @@
+{
+    "profile":{
+        "name": {"surname":"Max", "lastname": "Mustermann"},
+        "username":"maxm",
+        "email":"m.musterm@mail-example.com"
+    },
+    "ip_addresses":[
+        "0:0:0:0:0:0:0:1",
+        "2606:2800:220:1:248:1893:25c8:1946",
+        "2001:4860:4860:0:0:0:0:8888"
+    ]
+}
