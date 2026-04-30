@@ -21,7 +21,7 @@ public class Main {
         String controller =""; 
         // Phase 0. Determine Directory to Read
         String path = determineRootPath();
-
+        long startTime = System.currentTimeMillis();
         // convert to SARP graph
        SarpGraph graph = convertGraph(path);
 
@@ -31,11 +31,15 @@ public class Main {
             System.out.println(" " + node.toExtendedString());
         }
         */
-        System.out.println("** After Converter: Graph " + graph.getName() + " has " + graph.vertexSet().size() + " nodes and " + graph.edgeSet().size() + " edges.");
+       long endTime = System.currentTimeMillis();
+        System.out.println("** After Converter: Graph " + graph.getName() + " has " + graph.vertexSet().size() + " nodes and " + graph.edgeSet().size() + " edges. And was essembled in " + (endTime - startTime) + " ms.");
 
+        startTime = System.currentTimeMillis();
+        System.out.println("** Starting analysis of graph " + graph.getName() + "... at time: " + startTime);
         // Phase 3: Semantic Analysis & NER
         analyzeGraph(graph);
-        System.out.println("** After Analyzer: Graph " + graph.getName() + " has " + graph.vertexSet().size() + " nodes and " + graph.edgeSet().size() + " edges.");
+        endTime = System.currentTimeMillis();
+        System.out.println("** After Analyzer: Graph " + graph.getName() + " has " + graph.vertexSet().size() + " nodes and " + graph.edgeSet().size() + " edges. Analysis took " + (endTime - startTime) + " ms.");
         
         // Phase 4: Visualization & Export
         visualizeGraph(graph, path);

@@ -24,7 +24,8 @@ public class NER {
     private static Map<String, StanfordCoreNLP> languageMap = new HashMap<>();
         
     // could be used in the future if we want to extract entities from text nodes, e.g. to further process messages, or to extract keywords from large text files
-        public static List<CoreLabel> recognizeEntities(String value, String language) {
+    // not yet used because we currently focus on nodes that only contain a single value, which are more likely to be entities 
+    public static List<CoreLabel> recognizeEntities(String value, String language) {
 
         if(languageMap.size()<1){
             System.out.println("Initiating language Map");

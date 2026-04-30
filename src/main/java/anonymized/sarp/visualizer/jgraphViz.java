@@ -176,8 +176,13 @@ public class jgraphViz {
         }
 
 
-        // go to pareent directory of path to save results there
-        String parentPath = path.substring(0, path.lastIndexOf("/"));
+        // go to parent directory of path to save results there
+        String parentPath = path;
+         if(path.contains("/")){
+             parentPath = path.substring(0, path.lastIndexOf("/"));
+         }else if(parentPath.contains("\\")){
+            parentPath = path.substring(0, path.lastIndexOf("\\"));
+        }
 
         // create results folder if it doesn't exist
         File resultsDir = new File(parentPath + "/results/"+graph.getGraphName());
