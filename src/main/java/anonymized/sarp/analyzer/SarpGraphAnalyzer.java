@@ -30,17 +30,14 @@ public class SarpGraphAnalyzer {
     public void analyze() {
         BreadthFirstIterator<SarpNode, SarpEdge> iterator = new BreadthFirstIterator<>(graph);
         ClosenessCentrality<SarpNode, SarpEdge> closenessCentrality = new ClosenessCentrality<>(graph);
-
+        long nerTime = 0;
         while (iterator.hasNext()) {
             SarpNode node = iterator.next();
             node.addStat("depth", iterator.getDepth(node));
             node.addStat("nodeType", node.getClass().getSimpleName());
             node.addStat("closenessCentrality", closenessCentrality.getVertexScore(node));
             node.addStat("totalAncestors", graph.getAncNodes(node).length);
-           
-            // could not get it working, disabling for now (kw)
-            //            node.addStat("height", getNodeHeight(node));
-
+        
             if (node.getClass().equals(ValueNode.class)) {
                 ValueNode valueNode = (ValueNode) node;
                 // refine type
@@ -64,13 +61,17 @@ public class SarpGraphAnalyzer {
                     }else{
                         // refine type 2 discovered type 
                         // Try NER: is name, organization, location
+
                             System.out.println("=== NER ===");
+                            long startTime = System.currentTimeMillis();
                             if(isEntity(valueNode, "en")){
                                 System.out.println("Entity detected (en), type set to " + valueNode.getType());
                             }else if(isEntity(valueNode, "de")){
                                 System.out.println("=== German NER ===");
                                 System.out.println("Entity detected (de), type set to " + valueNode.getType()); 
                             }
+                            long endTime = System.currentTimeMillis();
+                            nerTime += (endTime - startTime);
                             // else: no entity detected, do nothing
                     }
     
@@ -139,6 +140,8 @@ public class SarpGraphAnalyzer {
                     }
                 } else if (node.getClass().equals(MapNode.class)) {
                     // Motif Discovery: are all subtrees of same structure, if so, are there non-contain labels that build a structure?
+                    // for now only validated for triangles, but could be extended in the future
+                    node.addStat("motif", "triangle");
                 }
 
                 // if node only contains valuenodes as children, we can run some statistics
@@ -165,7 +168,7 @@ public class SarpGraphAnalyzer {
                 }
             }
         }
-
+        System.out.println("Total NER time for graph " + graph.getName() + ": " + nerTime + " ms.");
     }
 
     public void printAllStats() {
@@ -178,13 +181,13 @@ public class SarpGraphAnalyzer {
     }
 
     private boolean isURIresolvable(ValueNode UriNode) {
-        String value = UriNode.getContentAString();
-        if(!value.startsWith("/")){
+        String uri_value = UriNode.getContentAString();
+        if(!uri_value.startsWith("/")){
             String root = graph.getRootPath();
             //root = root.replace("/", "\\");
-            String newValue = root+"\\"+value;
+            String newValue = root+"\\"+uri_value;
             System.out.println("Added prefix to path " + newValue);
-            value = newValue.replace("/","\\");
+            uri_value = newValue.replace("/","\\");
         }
         //URI nodeURI = URI.create(value);
         // iterate over all nodes an when file, check if their id matches the value
@@ -195,21 +198,32 @@ public class SarpGraphAnalyzer {
                 try{
                    
                     String fileNodeURI = fileNode.getPath();
-                    System.out.println("Comparing Path Value " + value + " with file node path " + fileNodeURI);
-                    String nodeUString = value;
-                    //String fileNodeUString = "/"+fileNodeURI.getPath();
-                    if(nodeUString.equals(fileNodeURI)){
-                        System.out.println("***********Value " + value + " is a URI pointing to file node " + node + ". Graph has " + graph.vertexSet().size() + " nodes and " + graph.edgeSet().size() + " edges before adding edge.");
+                    //System.out.println("Comparing Path Value " + uri_value + " with file node path " + fileNodeURI);
+                    if(uri_value.equals(fileNodeURI)){
                         graph.addDirectedEdge(UriNode, fileNode);
-                        System.out.println("Added edge from " + UriNode + " to " + fileNode + " graph has now: " + graph.edgeSet().size());
+                        System.out.println("***********Value " + uri_value + " is a URI pointing to file node " + fileNode.getName() + ". Graph has " + graph.vertexSet().size() + " nodes and " + graph.edgeSet().size() + " edges.");
                         return true;
+                    }else if((fileNode.getName()).matches("\\d+")){
+                        // workaround: if the file name is 4 digits, we compare only prefixes
+                        String uriNodeFileEnding = uri_value.substring(uri_value.lastIndexOf("."));
+                        String uriNodeFileName = uri_value.substring(uri_value.lastIndexOf("\\")+1);
+                        String fileNodeFileName = fileNodeURI.substring(fileNodeURI.lastIndexOf("\\")+1);
+                        String fileEnding = fileNode.getPath().substring(fileNode.getPath().lastIndexOf("."));
+                        boolean endingMatches = uri_value.endsWith(fileEnding);
+                        boolean prefixMatches = uriNodeFileName.startsWith(fileNode.getName());
+                        if( prefixMatches && endingMatches){
+                            
+                            graph.addDirectedEdge(UriNode, fileNode);
+                            System.out.println("***********Value " + uri_value + " is a URI pointing to file node " + fileNode.getName() + ". Figured it out with the workaround. Graph has now " + graph.edgeSet().size() + " edges.");
+                            return true;
+                        }
                     }
                 }catch(InvalidPathException | NullPointerException ex){
                 // not a valid path or file does not exist, do nothing
                 }
             }
         }
-        System.out.println("***********Value " + value + " is a URI but could not be resolved to any file node in the graph");
+        System.out.println("---------Value " + uri_value + " is a URI but could not be resolved to any file node in the graph");
         return false;
     }
 
