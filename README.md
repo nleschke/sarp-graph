@@ -15,7 +15,7 @@ In order to use OpenNLP for the named entity recognition, download the models by
 
 ## Structure of this repository
 This repository is mainly structured into the source files and the resulting artifacts, stored in the validation directory.
-## Visualizations referenced in the paper
+### Visualizations referenced in the paper
 Results, in particular the visualizations can be found under `validation\results`, including svg files that make it easier to explore the full graphs.
 ### Source Code
 We offer three components: the (file) readers, the (graph) analyzers and the (graph) visualizer, structured in packages. These packages are accompanied by helper packages defining the (SARP) graph structures, offering file utils and errors.
